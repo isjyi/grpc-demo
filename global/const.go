@@ -1,11 +1,11 @@
 package global
 
 const (
-	dburi       = "mongodb+srv://jerry:<p4JKI2mSGhWL8XJj>@cluster0-j7nek.azure.mongodb.net/<dbname>?retryWrites=true&w=majority"
-	dbname      = "grpc"
-	performance = 100
+	DB_URI        = "mongodb+srv://jerry:<p4JKI2mSGhWL8XJj>@cluster0-j7nek.azure.mongodb.net/<dbname>?retryWrites=true&w=majority"
+	DB_NAME       = "grpc"
+	DB_COLLECTION = "users"
 )
 
 var (
-	jwtSecret = []byte("grpc-demo")
+	JwtSecret = []byte("grpc-demo")
 )
