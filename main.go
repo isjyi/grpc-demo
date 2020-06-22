@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/isjyi/demo/cmd"
+import "github.com/isjyi/grpc-demo/cmd"
 
 func main() {
 	cmd.Execute()

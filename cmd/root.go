@@ -22,14 +22,11 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/isjyi/demo/imp"
 	homedir "github.com/mitchellh/go-homedir"
 )
 
 var (
 	cfgFile string
-	name    string
-	age     int
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -38,10 +35,7 @@ var rootCmd = &cobra.Command{
 	Short: "A test demo",
 	Long:  `Demo is a test appcation for print things`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(name) == 0 {
-			cmd.Help()
-		}
-		imp.Show(name, age)
+		cmd.Help()
 	},
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -69,8 +63,6 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.Flags().StringVarP(&name, "name", "n", "", "person's name")
-	rootCmd.Flags().IntVarP(&age, "age", "a", 0, "person's age")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -97,4 +89,5 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+	fmt.Println(viper.GetString("app_name"))
 }
