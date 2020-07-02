@@ -8,8 +8,10 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 option go_package = ".;pb";
 
 message LoginRequest {
-  string username = 1;
-  string password = 2;
+  string username = 1
+      [(gogoproto.moretags) = 'validate:"required" label:"用户名"'];
+  string password = 2
+      [(gogoproto.moretags) = 'validate:"required" label:"密码"'];
 }
 
 message LoginResponse {
@@ -20,9 +22,9 @@ message RegisterRequest {
   string username = 1
       [(gogoproto.moretags) = 'validate:"required" label:"用户名"'];
   string password = 2
-      [(gogoproto.moretags) = 'validate:"required" label:"密码"'];
-  string repeat_password = 3
-      [(gogoproto.moretags) = 'validate:"required" label:"密码"'];
+      [(gogoproto.moretags) =
+           'validate:"required,eqfield=RepeatPassword" label:"密码"'];
+  string repeat_password = 3;
 }
 
 message RegisterResponse {

@@ -11,6 +11,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	zh_translations "github.com/go-playground/validator/v10/translations/zh"
 	"github.com/isjyi/grpc-demo/global"
+	"github.com/isjyi/grpc-demo/service"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -20,6 +21,7 @@ type AuthSrv struct {
 	db       *mongo.Collection
 	validate *validator.Validate
 	trans    ut.Translator
+	jwt      *service.JWTManager
 }
 
 func NewAuthSrv() *AuthSrv {
@@ -42,7 +44,6 @@ func NewAuthSrv() *AuthSrv {
 	uni := ut.New(zh.New())
 	trans, _ := uni.GetTranslator("zh")
 	validate := validator.New()
-
 	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
 		name := fld.Tag.Get("label")
 		return name
@@ -59,5 +60,6 @@ func NewAuthSrv() *AuthSrv {
 		db:       client.Database(global.DB_NAME).Collection(global.DB_COLLECTION),
 		validate: validate,
 		trans:    trans,
+		jwt:      service.NewJWTManager(global.JwtSecret, 120*time.Minute),
 	}
 }

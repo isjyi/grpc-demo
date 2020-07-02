@@ -8,6 +8,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//NilUser is the Nil value for User
+var NilUser User
+
 // User contains user's information
 type User struct {
 	ID       primitive.ObjectID `bson:"_id"`

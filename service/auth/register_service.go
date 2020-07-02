@@ -2,56 +2,53 @@ package auth
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"log"
+	"net/http"
 	"time"
+
+	"google.golang.org/grpc/status"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/isjyi/grpc-demo/model"
 	"github.com/isjyi/grpc-demo/pb"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (s *AuthSrv) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	username, _, password := req.GetUsername(), req.GetRepeatPassword(), req.GetPassword()
 
-	if err := s.validate.Struct(req); err != nil {
+	err := s.validate.Struct(req)
 
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil, err
-		}
-		fmt.Println(err.Error())
+	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			// fmt.Println(err.Translate(s.trans)) //年龄必须大于18
-			fmt.Println(err.Namespace()) // can differ when a custom TagNameFunc is registered or
-			fmt.Println(err.Field())     // by passing alt name to ReportError like below
-			fmt.Println(err.StructNamespace())
-			fmt.Println(err.StructField())
-			fmt.Println(err.Tag())
-			fmt.Println(err.ActualTag())
-			fmt.Println(err.Kind())
-			fmt.Println(err.Type())
-			fmt.Println(err.Value())
-			fmt.Println(err.Param())
-			fmt.Println()
+			return nil, status.Errorf(http.StatusUnprocessableEntity, err.Translate(s.trans))
 		}
-		return nil, errors.New("Something went wrong")
 	}
 
-	newUser, err := model.NewUser(username, password)
+	newUser, err := model.NewUser(req.GetUsername(), req.GetPassword())
 
 	if err != nil {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	c, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	_, err = s.db.InsertOne(ctx, newUser)
+	if s.UsernameUsed(c, req.Username) {
+		return nil, status.Error(http.StatusUnprocessableEntity, "用户已存在")
+	}
+	_, err = s.db.InsertOne(c, newUser)
+
 	if err != nil {
 		log.Println("Error inserting newUser: ", err.Error())
-		return nil, errors.New("Something went wrong")
+		return nil, status.Error(http.StatusInternalServerError, "请稍后重试")
 	}
 
 	return &pb.RegisterResponse{Code: 200, Msg: "success"}, nil
+}
+
+func (s *AuthSrv) UsernameUsed(ctx context.Context, username string) (r bool) {
+	var res model.User
+	s.db.FindOne(ctx, bson.M{"username": username}).Decode(&res)
+	r = res != model.NilUser
+	return
 }
