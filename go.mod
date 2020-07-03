@@ -11,6 +11,7 @@ require (
 	github.com/go-playground/validator/v10 v10.3.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.14.6
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/mitchellh/go-homedir v1.1.0

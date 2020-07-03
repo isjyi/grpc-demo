@@ -25,6 +25,10 @@ import (
 	"path"
 	"strings"
 
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/isjyi/grpc-demo/pb"
@@ -76,7 +80,9 @@ func grpcRun() error {
 
 	log.Printf("listen on %s\n", port)
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(grpc_middleware.ChainStreamServer(
+		grpc_auth.StreamServerInterceptor(),
+	)))
 
 	pb.RegisterAuthServiceServer(server, auth.NewAuthSrv())
 
