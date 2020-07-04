@@ -25,10 +25,6 @@ import (
 	"path"
 	"strings"
 
-	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/isjyi/grpc-demo/pb"
@@ -48,7 +44,7 @@ var (
 // authCmd represents the auth command
 var authCmd = &cobra.Command{
 	Use:   "auth",
-	Short: "用户接口",
+	Short: "登陆服务",
 	Long:  `这是用户登陆`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if gatewaySwitch {
@@ -80,9 +76,7 @@ func grpcRun() error {
 
 	log.Printf("listen on %s\n", port)
 
-	server := grpc.NewServer(grpc.UnaryInterceptor(grpc_middleware.ChainStreamServer(
-		grpc_auth.StreamServerInterceptor(),
-	)))
+	server := grpc.NewServer()
 
 	pb.RegisterAuthServiceServer(server, auth.NewAuthSrv())
 
